@@ -1,8 +1,8 @@
 import json
+from models.basemodel import BaseModel
 import time
 
-
-class BuySignal():
+class BuySignal(BaseModel):
     
 
     def __init__(self, marketSymbol, price, indicator):
@@ -13,9 +13,3 @@ class BuySignal():
         self.rsi = indicator.rsiFast[-1]
         self.stochRsi = indicator.fastk[-1]
         self.lowerbandCrossed = indicator.bbandsLower[-1] > price
-
-
-
-    def toJson(self):
-
-        return json.dumps(self, default=lambda o: o.__dict__, indent=4)

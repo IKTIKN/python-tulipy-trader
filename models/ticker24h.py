@@ -1,7 +1,8 @@
-import json
+
+from models.basemodel import BaseModel
 
 
-class Ticker24h():
+class Ticker24h(BaseModel):
 
     def __init__(self, ticker):
 
@@ -26,8 +27,3 @@ class Ticker24h():
         self.firstId = ticker["firstId"]
         self.lastId = ticker["lastId"]
         self.count = ticker["count"]
-
-
-    def toJson(self):
-
-        return json.dumps(self, default=lambda o: o.__dict__, indent=4)
