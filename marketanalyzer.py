@@ -3,6 +3,7 @@ import time
 
 from binanceapi import Binance
 from filemanager import FileManager
+from models.buysignal import BuySignal
 from models.ticker24h import Ticker24h
 from tulp import Indicator
 
@@ -17,11 +18,11 @@ class MarketAnalyzer():
 
         self.api = Binance(FileManager().loadApiKeys())
 
-        self.markets, self.downMarkets, self.upMarkets = self._getMarkets(self.quoteAsset)
+        # self.markets, self.downMarkets, self.upMarkets = self._getMarkets(self.quoteAsset)
 
-        self.topGainers, self.topLosers, self.topVolumes = self._sortMarkets(self.markets, self.top)
-        self.topGainersUp, self.topLosersUp, self.topVolumesUp = self._sortMarkets(self.upMarkets, self.top)
-        self.topGainersDown, self.topLosersDown, self.topVolumesDown = self._sortMarkets(self.downMarkets, self.top)
+        # self.topGainers, self.topLosers, self.topVolumes = self._sortMarkets(self.markets, self.top)
+        # self.topGainersUp, self.topLosersUp, self.topVolumesUp = self._sortMarkets(self.upMarkets, self.top)
+        # self.topGainersDown, self.topLosersDown, self.topVolumesDown = self._sortMarkets(self.downMarkets, self.top)
 
 
 
@@ -79,11 +80,46 @@ class MarketAnalyzer():
 
 
 
+    def waitForBuySignal(self):
+
+        tradeMarketSymbols = ["LINKUPUSDT", "LINKDOWNUSDT"]
+        interval = "15m"
+        stochRsiTreshold = 0.0001
+
+        buySignal = None
+
+        while not buySignal:
+
+            for symbol in tradeMarketSymbols:
+
+                indicator = self.getIndicators(symbol, interval)
+
+                if indicator.fastk[-1] < stochRsiTreshold:
+
+                    indicator = self.followZeroStoch(symbol, interval)
+                    currentPrice = float(self.api.getTicker(symbol)["price"])
+                    buySignal = BuySignal(symbol, currentPrice, indicator)
+
+                    break
+
+                else:
+
+                    time.sleep(30)
+        
+        return buySignal
+
+    
+
+    def waitForSellSignal(self):
+        pass
+
+
+
     def followZeroStoch(self, marketSymbol, interval):
         #TODO FALSE POSITIVES
 
         zeroStochRSI = 0
-        while zeroStochRSI < 4:
+        while zeroStochRSI < 5:
 
             time.sleep(50)
 
@@ -91,3 +127,8 @@ class MarketAnalyzer():
 
             if indicator.fastk[-1] > 0.0001:
                 zeroStochRSI += 1
+
+            else:
+                zeroStochRSI = 0
+
+        return indicator
