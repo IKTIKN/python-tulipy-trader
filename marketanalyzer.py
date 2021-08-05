@@ -1,4 +1,5 @@
 
+from models.ticker import Ticker
 import time
 
 from binanceapi import Binance
@@ -97,8 +98,8 @@ class MarketAnalyzer():
                 if indicator.fastk[-1] < stochRsiTreshold:
 
                     indicator = self.followZeroStoch(symbol, interval)
-                    currentPrice = float(self.api.getTicker(symbol)["price"])
-                    buySignal = BuySignal(symbol, currentPrice, indicator)
+                    ticker = Ticker(self.api.getTicker(symbol))
+                    buySignal = BuySignal(symbol, ticker.price, indicator)
 
                     break
 
