@@ -1,4 +1,5 @@
 
+from models.tradesignal import TradeSignal
 from models.ticker import Ticker
 import time
 
@@ -111,10 +112,32 @@ class MarketAnalyzer():
 
     
 
-    def waitForSellSignal(self):
-        pass
+    def waitForSellSignal(self, symbol, buyPrice):
 
+        interval = "15m"
+        stochRsiTreshold = 0.0001
+        stopLossPercentage = 0.95
 
+        sellSignal = None
+        while not sellSignal:
+            
+            indicator = self.getIndicators(symbol, interval)
+            ticker = Ticker(self.api.getTicker(symbol)) 
+
+            print(ticker.price, indicator.fastk[-1])
+
+            if (buyPrice * stopLossPercentage) >= buyPrice:
+                sellSignal = TradeSignal("sell", symbol, ticker.price, indicator)
+                print("stoploss")
+
+            if indicator.fastk[-1] <= stochRsiTreshold:
+                sellSignal = TradeSignal("sell", symbol, ticker.price, indicator)
+                print("zerostoch")
+
+            else:
+                time.sleep(30)
+
+                
 
     def followZeroStoch(self, marketSymbol, interval):
         #TODO FALSE POSITIVES
