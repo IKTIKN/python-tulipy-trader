@@ -8,10 +8,12 @@ class Bot():
     def run(self):
 
         while True:
-            buySignal = market.waitForBuySignal()
-            log.buySignal(buySignal)
-            print(buySignal.symbol)
 
+            buySignal = market.waitForBuySignal()
+            log.tradeSignal(buySignal)
+
+            sellSignal = market.waitForSellSignal(buySignal.symbol, buySignal.price)
+            log.tradeSignal(sellSignal)
 
 
 if __name__ == "__main__":

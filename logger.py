@@ -1,5 +1,9 @@
 import time
 
+from models.tradesignal import TradeSignal
+from tulp import Indicator
+
+
 class Logger():
 
 
@@ -9,19 +13,19 @@ class Logger():
 
 
 
-    def buySignal(self, buySignal):
+    def tradeSignal(self, signal: TradeSignal):
 
-        print("\n{:<10} Buy {:<10} Price: {:<20}".format(self._currentTime(buySignal.timestamp), buySignal.symbol, buySignal.price))
+        print("\n{:<10} {} {:<10} Price: {:<20}".format(self._currentTime(signal.timestamp), signal.type.upper(), signal.symbol, signal.price))
         print("\t   RSI: {:<8.2f}  STOCHRSI: {:<8.2f} Lowerband crossed: {}".format(
-            buySignal.rsi,
-            buySignal.stochRsi,
-            buySignal.lowerbandCrossed
+            signal.rsi,
+            signal.stochRsi,
+            signal.lowerbandCrossed
             )
         )
 
 
 
-    def indicators(self, symbol, interval, indicator):
+    def indicators(self, symbol, interval, indicator: Indicator):
 
         print("\n" + 14 * "=" + " {:<15} {} ".format(symbol, interval) + 14 * "=" + "\n")
     

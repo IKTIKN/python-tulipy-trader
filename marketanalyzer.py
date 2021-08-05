@@ -1,12 +1,11 @@
 
-from models.tradesignal import TradeSignal
-from models.ticker import Ticker
 import time
 
 from binanceapi import Binance
 from filemanager import FileManager
-from models.buysignal import BuySignal
+from models.ticker import Ticker
 from models.ticker24h import Ticker24h
+from models.tradesignal import TradeSignal
 from tulp import Indicator
 
 
@@ -100,7 +99,7 @@ class MarketAnalyzer():
 
                     indicator = self.followZeroStoch(symbol, interval)
                     ticker = Ticker(self.api.getTicker(symbol))
-                    buySignal = BuySignal(symbol, ticker.price, indicator)
+                    buySignal = TradeSignal("buy", symbol, ticker.price, indicator)
 
                     break
 
@@ -126,9 +125,13 @@ class MarketAnalyzer():
 
             print(ticker.price, indicator.fastk[-1])
 
-            if (buyPrice * stopLossPercentage) >= buyPrice:
+            if (buyPrice * stopLossPercentage) >= ticker.price:
                 sellSignal = TradeSignal("sell", symbol, ticker.price, indicator)
                 print("stoploss")
+
+            if (buyPrice * 1.03) <= ticker.price:
+                sellSignal = TradeSignal("sell", symbol, ticker.price, indicator)
+                print("takeprofit")
 
             if indicator.fastk[-1] <= stochRsiTreshold:
                 sellSignal = TradeSignal("sell", symbol, ticker.price, indicator)
@@ -137,7 +140,9 @@ class MarketAnalyzer():
             else:
                 time.sleep(30)
 
-                
+        return sellSignal
+
+
 
     def followZeroStoch(self, marketSymbol, interval):
         #TODO FALSE POSITIVES
