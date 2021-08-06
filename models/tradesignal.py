@@ -14,4 +14,4 @@ class TradeSignal(BaseModel):
         self.price = float(price)
         self.rsi = indicator.rsiFast[-1]
         self.stochRsi = indicator.fastk[-1]
-        self.lowerbandCrossed = indicator.bbandsLower[-1] > price
+        # self.lowerbandCrossed = indicator.bbandsLower[-1] > price

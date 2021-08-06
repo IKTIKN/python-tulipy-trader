@@ -12,7 +12,7 @@ class Bot():
             buySignal = market.waitForBuySignal()
             log.tradeSignal(buySignal)
 
-            sellSignal = market.waitForSellSignal(buySignal.symbol, buySignal.price)
+            sellSignal = market.waitForSellSignal(buySignal.marketSymbol, buySignal.price)
             log.tradeSignal(sellSignal)
 
 
@@ -23,6 +23,10 @@ if __name__ == "__main__":
         
     print("\nTAAAAAAAAH JIJ WEER?\n\n")
 
-    Bot().run()
+    try:
+        Bot().run()
+
+    except KeyboardInterrupt:
+        print("\n\nGG")
 
    

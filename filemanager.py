@@ -2,14 +2,21 @@ import json
 import os
 
 from models.apikey import ApiKey
+from models.tradesignal import TradeSignal
 
 
 class FileManager():
 
 
-    def _fileExists(self, fileName):
+    def _pathExists(self, path):
 
-        return os.path.exists(fileName)
+        directory = path.split("/")[0]
+
+        if not os.path.isdir(directory):
+
+            os.mkdir(directory)
+
+        return os.path.exists(path)
 
 
 
@@ -32,7 +39,24 @@ class FileManager():
             file.write(data)
 
         file.close()
-        
+    
+
+
+    def saveTradeSignal(self, tradeSignal: TradeSignal):
+
+        path = "output/tradesignals.json"
+
+        if self._pathExists(path):
+
+            dict = self._readFile(path)
+            dict["tradeSignals"].append(json.loads(tradeSignal.toJson()))
+
+            self._writeFile(path, json.dumps(dict))
+            
+        else:
+            dict = {"tradeSignals": [json.loads(tradeSignal.toJson())]}           
+            self._writeFile(path, json.dumps(dict))
+
 
 
     def loadApiKeys(self):
@@ -40,7 +64,7 @@ class FileManager():
         path = "config/apikeys.json"
         keyObj = None
         
-        if self._fileExists(path):
+        if self._pathExists(path):
 
             keyData = self._readFile(path)
             keyObj = ApiKey(keyData["key"], keyData["secret"])
@@ -64,9 +88,10 @@ class FileManager():
 
 
 if __name__ == "__main__":
+    fileManager = FileManager()
+    
+    fileManager.saveTradeSignal()
+    fileManager.loadApiKeys()
+    # print(fileManager._pathExists(teststring))
 
-    auth = FileManager().loadApiKeys()
-
-    print(auth.key)
-    print(auth.secret)
     

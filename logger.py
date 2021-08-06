@@ -1,3 +1,4 @@
+from filemanager import FileManager
 import time
 
 from models.tradesignal import TradeSignal
@@ -5,6 +6,12 @@ from tulp import Indicator
 
 
 class Logger():
+
+
+    def __init__(self):
+
+        self.fileManager = FileManager()
+        
 
 
     def _currentTime(self, timestamp):
@@ -15,11 +22,12 @@ class Logger():
 
     def tradeSignal(self, signal: TradeSignal):
 
-        print("\n{:<10} {} {:<10} Price: {:<20}".format(self._currentTime(signal.timestamp), signal.type.upper(), signal.symbol, signal.price))
-        print("\t   RSI: {:<8.2f}  STOCHRSI: {:<8.2f} Lowerband crossed: {}".format(
+        self.fileManager.saveTradeSignal(signal)
+
+        print("\n{:<10} {} {:<10} Price: {:<20}".format(self._currentTime(signal.timestamp), signal.marketSide.upper(), signal.marketSymbol, signal.price))
+        print("\t   RSI: {:<8.2f}  STOCHRSI: {:<8.2f}".format(
             signal.rsi,
             signal.stochRsi,
-            signal.lowerbandCrossed
             )
         )
 
